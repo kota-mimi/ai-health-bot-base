@@ -1118,24 +1118,16 @@ true または false で回答してください。`;
         }
       }
 
-      // ランダムジャンル・料理スタイルを追加してバリエーション強化（身近な材料中心）
-      const cuisineTypes = ['和風', '洋風', 'アジア風', '中華風', '家庭料理風', '韓国風', '簡単イタリアン風', '定食屋風', 'カフェ風', '居酒屋風'];
-      const cookingStyles = ['蒸し', '焼き', '煮込み', '炒め', 'レンチン', '揚げない揚げ物風', 'サラダ風', 'スープ', '丼もの', 'おかず'];
-      const mainIngredients = ['魚', '鶏肉', '豚肉', '豆腐', '卵', 'きのこ', '野菜メイン', 'ひき肉', 'チーズ', '缶詰'];
-      
-      const randomCuisine = cuisineTypes[Math.floor(Math.random() * cuisineTypes.length)];
-      const randomStyle = cookingStyles[Math.floor(Math.random() * cookingStyles.length)];
-      const randomIngredient = mainIngredients[Math.floor(Math.random() * mainIngredients.length)];
+      // 会話履歴からパターン回避のための情報を抽出
+      const previousRecipes = conversationHistory ? conversationHistory.toLowerCase() : '';
 
       const prompt = `
 あなたは「ヘルシーくん」という親しみやすく経験豊富なパーソナルトレーナー兼栄養管理士です。タメ口で親しみやすい自然な口調で、友達感覚で話してください。
 ユーザーの「${userMessage}」に対して、**質問の雰囲気やニュアンスに合わせた**健康的で栄養バランスの良いレシピを提案してください。
 
-**🎯 今回の創作ヒント（バリエーション強化）:**
-- 料理系統: ${randomCuisine}
-- 調理方法: ${randomStyle}
-- メイン食材: ${randomIngredient}
-**上記を参考に、いつもと違う新鮮なレシピを提案してください！同じような料理は絶対に避けて、毎回違うアプローチで！**
+**🎯 重要な指示:**
+- **ユーザーのリクエストを最優先**で、質問の内容通りの料理ジャンル・食材・スタイルで提案してください
+- 過去の会話履歴を確認して、前回と同じようなレシピは避けてバリエーションを提供してください
 
 **重要な応答ルール（CRITICAL）：
 - 絶対に「ヘルシーくん：」やキャラクター名で始めない
