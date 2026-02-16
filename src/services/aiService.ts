@@ -1121,6 +1121,26 @@ true または false で回答してください。`;
       // 会話履歴からパターン回避のための情報を抽出
       const previousRecipes = conversationHistory ? conversationHistory.toLowerCase() : '';
 
+      // 曖昧なヘルシーリクエスト用のランダム選択
+      const isVagueHealthyRequest = /(?:痩せる|ダイエット|ヘルシー|健康的).*(?:レシピ|料理|食べ物)/.test(userMessage.toLowerCase()) && 
+                                   !/(?:鶏|豚|牛|魚|サラダ|パスタ|カレー|スープ|炒め物|煮物|焼き物|唐揚げ|ハンバーグ|ステーキ|野菜|きのこ|豆腐|もやし|キャベツ|にんじん|じゃがいも|たまご|卵|麺|うどん|そば|ラーメン|米|ご飯|パン)/.test(userMessage.toLowerCase());
+      
+      let randomHealthyHint = '';
+      if (isVagueHealthyRequest) {
+        const healthyOptions = [
+          { cuisine: '和風', style: '蒸し', ingredient: '豆腐' },
+          { cuisine: '洋風', style: '焼き', ingredient: 'キノコ' },
+          { cuisine: '中華風', style: '炒め', ingredient: 'もやし' },
+          { cuisine: '韓国風', style: '和え', ingredient: 'キムチ' },
+          { cuisine: 'タイ風', style: '煮込み', ingredient: 'ココナッツ' },
+          { cuisine: 'イタリア風', style: 'グリル', ingredient: 'ズッキーニ' },
+          { cuisine: 'メキシコ風', style: 'サルサ', ingredient: 'アボカド' },
+          { cuisine: '地中海風', style: 'マリネ', ingredient: 'オリーブ' }
+        ];
+        const randomChoice = healthyOptions[Math.floor(Math.random() * healthyOptions.length)];
+        randomHealthyHint = `今回は${randomChoice.cuisine}×${randomChoice.style}×${randomChoice.ingredient}をベースにした斬新なヘルシーレシピを提案してください。`;
+      }
+
       const prompt = `
 あなたは「ヘルシーくん」という親しみやすく経験豊富なパーソナルトレーナー兼栄養管理士です。タメ口で親しみやすい自然な口調で、友達感覚で話してください。
 ユーザーの「${userMessage}」に対して、**質問の雰囲気やニュアンスに合わせた**健康的で栄養バランスの良いレシピを提案してください。
@@ -1128,6 +1148,7 @@ true または false で回答してください。`;
 **🎯 重要な指示:**
 - **ユーザーのリクエストを最優先**で、質問の内容通りの料理ジャンル・食材・スタイルで提案してください
 - 過去の会話履歴を確認して、前回と同じようなレシピは避けてバリエーションを提供してください
+${randomHealthyHint ? `- ${randomHealthyHint}` : ''}
 
 **重要な応答ルール（CRITICAL）：
 - 絶対に「ヘルシーくん：」やキャラクター名で始めない
@@ -1255,7 +1276,6 @@ true または false で回答してください。`;
 
 条件：
 - **絶対条件**: 毎回異なるジャンル・食材・調理法で、パターン化を完全回避
-- 提案ヒント（${randomCuisine} × ${randomStyle} × ${randomIngredient}）を活用して斬新なレシピを
 - 健康的で栄養バランスを重視しつつ、ユーザーの雰囲気に合わせた料理を選択
 - 材料は12個以内（調味料含む、整合性重視）
 - **重要**: スーパーで簡単に手に入る材料を优先（ローズマリー、バジル、タイムなどの特殊ハーブ禁止）
